@@ -3,13 +3,27 @@ package net.amunak.plugins
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
+import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.http.content.*
+import java.io.File
 
 fun Application.configureRouting() {
 	val teapotStatusCode = HttpStatusCode(418, "I'm a teapot")
+
+	install(CachingHeaders) {
+		options { call, content ->
+			when {
+				content.status?.isSuccess() == false -> CachingOptions(CacheControl.NoStore(CacheControl.Visibility.Private))
+				call.request.uri == "/favicon.ico" -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
+				call.request.uri.startsWith("/assets/") -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 86400))
+				else -> CachingOptions(CacheControl.NoStore(CacheControl.Visibility.Private))
+			}
+		}
+	}
 
 	install(StatusPages) {
 		exception<Throwable> { call, cause ->
@@ -32,6 +46,17 @@ fun Application.configureRouting() {
 
 	routing {
 		route("/tea") { handle { call.respond(teapotStatusCode) } }
-		staticResources("/assets", "assets")
+		get("/favicon.ico") {
+			val file = File("assets/favicon.ico")
+			call.response.headers.append(HttpHeaders.LastModified, file.lastModified().toString())
+			call.response.status(HttpStatusCode.OK)
+			call.respondFile(file)
+		}
+		staticFiles("/assets", File("assets")) {
+			enableAutoHeadResponse()
+			modify { file, call ->
+				call.response.headers.append(HttpHeaders.LastModified, file.lastModified().toString())
+			}
+		}
 	}
 }
