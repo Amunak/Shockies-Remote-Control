@@ -1,4 +1,6 @@
 export default class Control {
+	retryCount = 0
+
 	/**
 	 * @param {HTMLFormElement} bindForm
 	 * @param {URL} websocketUrl
@@ -6,7 +8,7 @@ export default class Control {
 	constructor(bindForm, websocketUrl) {
 		this.bindForm = bindForm
 		this.websocketUrl = websocketUrl
-		this.createWebsocket(websocketUrl)
+		this.connect()
 
 		bindForm.querySelectorAll('button#shock').forEach((button) => button.addEventListener('mousedown', this.trigger.bind(this, "S", this.bindForm.querySelector('input#shockIntensity').value)))
 		bindForm.querySelectorAll('button#vibrate').forEach((button) => button.addEventListener('mousedown', this.trigger.bind(this, "V", this.bindForm.querySelector('input#vibrateIntensity').value)))
@@ -39,29 +41,36 @@ export default class Control {
 	}
 
 	logSelf(message) {
-		console.log.bind('[CONTROL]', message)
+		console.log.apply(console, [`[${this.constructor.name}] ${message}`])
 	}
 
-	createWebsocket(websocketUrl) {
-		this.websocket = new WebSocket(websocketUrl)
+	connect() {
+		if (this.retryCount > 5) {
+			this.logSelf('Too many retries. Giving up.')
+			return
+		}
+
+		this.retryCount++
+		this.websocket = new WebSocket(this.websocketUrl)
 		this.websocket.onmessage = this.logSelf.bind(this, 'Message: ')
-		this.websocket.onopen = this.logSelf.bind(this, 'Connection established.')
+		this.websocket.onopen = this.wsOnOpen.bind(this)
 		this.websocket.onclose = this.wsOnClose.bind(this)
 		this.websocket.onerror = this.wsOnError.bind(this)
+	}
+
+	wsOnOpen() {
+		this.retryCount = 0
+		this.logSelf('Connection established.')
 	}
 
 	wsOnClose() {
 		this.logSelf('Connection closed. Retrying...')
 		setTimeout(() => {
-			this.createWebsocket(this.websocketUrl)
+			this.connect()
 		}, 5000)
 	}
 
 	wsOnError() {
-		this.logSelf('Connection error. Retrying...')
-		setTimeout(() => {
-			this.createWebsocket(this.websocketUrl)
-		}, 5000)
+		this.logSelf('Connection error.')
 	}
-
 }

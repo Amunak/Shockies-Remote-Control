@@ -1,5 +1,8 @@
 export default class Log
 {
+	lastWasInfo = false
+	retryCount = 0
+
 	/**
 	 * @param {HTMLElement} targetElement
 	 * @param {URL} websocketUrl
@@ -7,11 +10,17 @@ export default class Log
 	constructor(targetElement, websocketUrl) {
 		this.targetElement = targetElement
 		this.websocketUrl = websocketUrl
-		this.createWebsocket(websocketUrl)
+		this.connect()
 	}
 
-	createWebsocket(websocketUrl) {
-		this.websocket = new WebSocket(websocketUrl)
+	connect() {
+		if (this.retryCount > 5) {
+			this.pushInfo('Too many retries. Giving up.')
+			return
+		}
+
+		this.retryCount++
+		this.websocket = new WebSocket(this.websocketUrl)
 		this.websocket.onmessage = this.wsOnMessage.bind(this)
 		this.websocket.onopen = this.wsOnOpen.bind(this)
 		this.websocket.onclose = this.wsOnClose.bind(this)
@@ -19,34 +28,39 @@ export default class Log
 	}
 
 	pushInfo(text, replace = false) {
-		let message = `\n\n&lt;&lt;&lt; ${text} &gt;&gt;&gt;\n\n`
+		let message = `&lt;&lt;&lt; ${text} &gt;&gt;&gt;\n`
+
+		if (!this.lastWasInfo) {
+			message = `\n\n${message}\n`
+		}
 
 		if (replace) {
 			this.targetElement.innerHTML = message
 		} else {
 			this.targetElement.innerHTML = message + this.targetElement.innerHTML
 		}
+
+		this.lastWasInfo = true
 	}
 
 	wsOnMessage(event) {
 		this.targetElement.innerHTML = event.data + this.targetElement.innerHTML
+		this.lastWasInfo = false
 	}
 
 	wsOnOpen() {
+		this.retryCount = 0
 		this.pushInfo('Connection established.', true)
 	}
 
 	wsOnClose() {
-		this.pushInfo('Connection closed. Retrying...')
+		this.pushInfo('Disconnected. Reconnecting...')
 		setTimeout(() => {
-			this.createWebsocket(this.websocketUrl)
+			this.connect()
 		}, 5000)
 	}
 
 	wsOnError() {
-		this.pushInfo('Connection error. Retrying...')
-		setTimeout(() => {
-			this.createWebsocket(this.websocketUrl)
-		}, 5000)
+		this.pushInfo('Connection error.')
 	}
 }
