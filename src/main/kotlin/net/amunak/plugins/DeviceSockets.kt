@@ -49,13 +49,18 @@ fun Application.configureDeviceSockets() {
 
 						// register format: `REGISTER <id>`
 						if (command == "REGISTER") {
-							if (list.size != 2) {
+							if (list.size != 3) {
 								logAndSend(client?.log ?: tempLog, "ERROR: Invalid format")
 								continue
 							}
 
 							if (list[1].isBlank() || list[1].length !in 32..255) {
 								logAndSend(client?.log ?: tempLog, "ERROR: Invalid ID")
+								continue
+							}
+
+							if (list[2].isBlank() || !list[2].matches(Regex("^\\d+\\.\\d+\\.\\d+\$"))) {
+								logAndSend(client?.log ?: tempLog, "ERROR: Invalid version")
 								continue
 							}
 
@@ -72,7 +77,7 @@ fun Application.configureDeviceSockets() {
 								tempLog.prependOther(client.log)
 							}
 
-							client = ShockiesClientRepository.addIfAbsent(ShockiesClient(id, this, log = tempLog))
+							client = ShockiesClientRepository.addIfAbsent(ShockiesClient(id, this, version = Version.fromString(list[2]), log = tempLog))
 							log.info("Registered client ${client.id}")
 
 							val url = call.request.local.run {

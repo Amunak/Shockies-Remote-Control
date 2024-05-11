@@ -8,6 +8,7 @@ import net.amunak.repository.ShockiesControlLinkRepository
 data class ShockiesClient(
 	val id: ShockiesClientId,
 	var ws: WebSocketSession,
+	val version: Version,
 	val log: WebsocketMessageLog = WebsocketMessageLog(),
 	val createdAt: Instant = Clock.System.now(),
 	var lastSeenAt: Instant = Clock.System.now(),

@@ -25,6 +25,7 @@
 	<h1>Configure</h1>
 	<section>
 		<strong>Client ID:</strong> {{ client.id }}<br>
+		<strong>Shockies Version:</strong> {{ client.version }}<br>
 		<strong>Created at:</strong> {{ client.createdAt }}<br>
 		<strong>Last seen at:</strong> {{ client.lastSeenAt }}<br>
 		<strong>Disconnected at:</strong> {{ client.disconnectedAt }}<br>

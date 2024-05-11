@@ -1,11 +1,13 @@
 {% extends "layout.html.peb" %}
 
+{# @pebvariable name="repository" type="net.amunak.repository.ShockiesClientRepository" #}
 {% block content %}
 	<h1>Clients: {{repository.size}}</h1>
 	<table class="table table-striped">
 		<thead>
 			<tr>
 				<th>Id</th>
+				<th>Shockies Version</th>
 				<th>Created At</th>
 				<th>Last Seen At</th>
 				<th>Disconnected At</th>
@@ -19,6 +21,7 @@
 							{{client.id}}
 						</a>
 					</td>
+					<td>{{client.version}}</td>
 					<td>{{client.createdAt}}</td>
 					<td>{{client.lastSeenAt}}</td>
 					<td>{{client.disconnectedAt}}</td>
