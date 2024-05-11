@@ -7,9 +7,14 @@
 	<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="/assets/styles.css">
 	<title>Shockies Remote Control</title>
+
+	{% block javascript %}{% endblock %}
 <body>
 	<main class="container">
 		{% block content %}{% endblock %}
+	</main>
+	<main class="log">
+		{% block log %}{% endblock %}
 	</main>
 </body>
 </html>

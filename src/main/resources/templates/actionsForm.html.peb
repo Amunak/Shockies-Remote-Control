@@ -1,0 +1,25 @@
+{# @pebvariable name="config" type="net.amunak.models.ShockiesDeviceConfiguration" #}
+<form id="actionsForm" action="#">
+	<div class="form-group">
+		<label for="accessKey">Access Key</label>
+		<input type="text" id="accessKey">
+	</div>
+
+	<div class="form-group">
+		<label for="shockIntensity">Intensity</label>
+		<input type="number" id="shockIntensity" min="0" max="{{ config.shockIntensity }}" value="{{ min(5, config.shockIntensity) }}">
+		<button id="shock" class="btn btn-primary" {{ not config.features.shock ? "disabled" : "" }}>Shock</button>
+	</div>
+
+	<div class="form-group">
+		<label for="vibrateIntensity">Intensity</label>
+		<input type="number" id="vibrateIntensity" min="0" max="{{ config.vibrateIntensity }}" value="{{ min(20, config.vibrateIntensity) }}">
+		<button id="vibrate" class="btn btn-primary" {{ not config.features.vibrate ? "disabled" : "" }}>Vibrate</button>
+	</div>
+
+	<div class="form-group">
+		<button id="beep" class="btn btn-primary" {{ not config.features.beep ? "disabled" : "" }}>Beep</button>
+		<button id="light" class="btn btn-primary" {{ not config.features.light ? "disabled" : "" }}>Light</button>
+		<button id="stop" class="btn btn-primary">EStop</button>
+	</div>
+</form>

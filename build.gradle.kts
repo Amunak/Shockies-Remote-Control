@@ -31,12 +31,15 @@ dependencies {
 	implementation("io.ktor:ktor-server-host-common-jvm:$ktorVersion")
 	implementation("io.ktor:ktor-server-status-pages-jvm:$ktorVersion")
 	implementation("io.ktor:ktor-server-default-headers:$ktorVersion")
+	implementation("io.ktor:ktor-server-rate-limit:$ktorVersion")
 	implementation("io.ktor:ktor-server-caching-headers:$ktorVersion")
 	implementation("io.ktor:ktor-server-cio:$ktorVersion")
+
 	implementation("ch.qos.logback:logback-classic:$logbackVersion")
+	implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDatetimeVersion")
+
 	testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
-	implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDatetimeVersion")
 }
 
 tasks.register("createApplicationPropertiesFile") {

@@ -1,0 +1,29 @@
+{% extends "layout.html.peb" %}
+
+{% block content %}
+	<h1>Clients: {{repository.size}}</h1>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Created At</th>
+				<th>Last Seen At</th>
+				<th>Disconnected At</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for client in repository %}
+				<tr>
+					<td>
+						<a href="/configure/{{client.id}}">
+							{{client.id}}
+						</a>
+					</td>
+					<td>{{client.createdAt}}</td>
+					<td>{{client.lastSeenAt}}</td>
+					<td>{{client.disconnectedAt}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

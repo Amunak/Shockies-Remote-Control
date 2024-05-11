@@ -1,0 +1,75 @@
+{% extends "layout.html.peb" %}
+
+{% block javascript %}
+	<script type="module">
+		import Control from '/assets/Control.js'
+		import Log from '/assets/Log.js'
+
+		document.addEventListener('DOMContentLoaded', () => {
+			new Log(
+				document.getElementById('logStream'),
+				'/configure/{{ client.id }}/log-stream',
+			)
+
+			new Control(
+				document.getElementById('actionsForm'),
+				'/control/{{ client.controlLinks[0].id }}/ws',
+			)
+		})
+	</script>
+{% endblock %}
+
+
+{# @pebvariable name="client" type="net.amunak.models.ShockiesClient" #}
+{% block content %}
+	<h1>Configure</h1>
+	<section>
+		<strong>Client ID:</strong> {{ client.id }}<br>
+		<strong>Created at:</strong> {{ client.createdAt }}<br>
+		<strong>Last seen at:</strong> {{ client.lastSeenAt }}<br>
+		<strong>Disconnected at:</strong> {{ client.disconnectedAt }}<br>
+		<strong>Configuration:</strong> {{ client.deviceConfiguration }}<br>
+	</section>
+	<section>
+		<h2>Control Links</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>Link</th>
+					<th>Expires At</th>
+					<th>Enabled Features</th>
+					<th>Max Shock Intensity</th>
+					<th>Max Shock Duration</th>
+					<th>Max Vibrate Intensity</th>
+					<th>Max Vibrate Duration</th>
+				</tr>
+			</thead>
+			<tbody>
+				{# @pebvariable name="controlLink" type="net.amunak.models.ShockiesControlLink" #}
+				{% for controlLink in client.controlLinks %}
+					<tr>
+						<td><code>{{ controlLink.id }}</code></td>
+						<td>{{ controlLink.expiresAt }}</td>
+						<td>{{ controlLink.configuration.features }}</td>
+						<td>{{ controlLink.configuration.shockIntensity }}</td>
+						<td>{{ controlLink.configuration.shockDuration }}</td>
+						<td>{{ controlLink.configuration.vibrateIntensity }}</td>
+						<td>{{ controlLink.configuration.vibrateDuration }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
+	<section>
+		<h2>Test</h2>
+		{% include "actionsForm.html.peb" with {"config": client.deviceConfiguration} %}
+	</section>
+{% endblock %}
+
+
+{% block log %}
+	<section>
+		<h2>Device Log</h2>
+		<pre id="logStream">{% for logMessage in client.log %}{{ logMessage }}<br>{% endfor %}</pre>
+	</section>
+{% endblock %}
