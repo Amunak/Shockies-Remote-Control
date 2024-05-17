@@ -44,7 +44,9 @@ export default class Log
 	}
 
 	wsOnMessage(event) {
-		this.targetElement.innerHTML = event.data + this.targetElement.innerHTML
+		// reverse line order
+		let text = event.data.split('\n').reverse().join('\n')
+		this.targetElement.innerHTML = text + this.targetElement.innerHTML
 		this.lastWasInfo = false
 	}
 

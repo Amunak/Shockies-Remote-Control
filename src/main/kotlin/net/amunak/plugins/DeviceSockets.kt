@@ -1,21 +1,24 @@
 package net.amunak.plugins
 
-import net.amunak.repository.ShockiesClientRepository
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.*
 import kotlinx.datetime.Clock
+import net.amunak.RouteGenerator
+import net.amunak.baseUri
 import net.amunak.eventBus.DeviceMessageEventBus
 import net.amunak.models.*
 import net.amunak.models.WebsocketLogMessage.WebsocketMessageDirection
-import java.time.Duration
+import net.amunak.repository.ShockiesClientRepository
+import net.amunak.updateBaseUri
 
 fun Application.configureDeviceSockets() {
 	routing {
 		webSocket("/ws") {
 			log.debug("New websocket connection")
+
+			call.request.updateBaseUri()
 
 			val tempLog: WebsocketMessageLog = WebsocketMessageLog()
 			var client: ShockiesClient? = null
@@ -39,7 +42,6 @@ fun Application.configureDeviceSockets() {
 						}
 
 						val list = text.split(" ")
-
 						if (list.isEmpty()) {
 							logAndSend(client?.log ?: tempLog, "ERROR: Invalid format")
 							continue
@@ -80,13 +82,7 @@ fun Application.configureDeviceSockets() {
 							client = ShockiesClientRepository.addIfAbsent(ShockiesClient(id, this, version = Version.fromString(list[2]), log = tempLog))
 							log.info("Registered client ${client.id}")
 
-							val url = call.request.local.run {
-								if ((serverPort == 80 && scheme == "http") || (serverPort == 443 && scheme == "https")) {
-									"${scheme}://${serverHost}/configure/${client.id}"
-								} else {
-									"${scheme}://${serverHost}:${serverPort}/configure/${client.id}"
-								}
-							}
+							val url = baseUri + RouteGenerator.generateRoute("configure", mapOf("clientId" to client.id)).trimStart('/')
 							logAndSend(client.log, "REMOTE URL $url")
 
 							continue

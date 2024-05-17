@@ -9,10 +9,10 @@ data class ShockiesDeviceFeatures(
 	companion object {
 		fun decode(char: Int): ShockiesDeviceFeatures {
 			return ShockiesDeviceFeatures(
-				(char and 0b0001) == 1,
-				(char and 0b0010) == 1,
-				(char and 0b0100) == 1,
-				(char and 0b1000) == 1,
+				(char and 0b0001) != 0,
+				(char and 0b0010) != 0,
+				(char and 0b0100) != 0,
+				(char and 0b1000) != 0,
 			)
 		}
 	}

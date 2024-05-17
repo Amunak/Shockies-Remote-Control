@@ -8,12 +8,12 @@
 		document.addEventListener('DOMContentLoaded', () => {
 			new Log(
 				document.getElementById('logStream'),
-				'/configure/{{ client.id }}/log-stream',
+				'{{ route("configure.log_stream", {"clientId": client.id}) }}',
 			)
 
 			new Control(
 				document.getElementById('actionsForm'),
-				'/control/{{ client.controlLinks[0].id }}/ws',
+				'{{ route("control.ws", {"linkId": client.controlLinks[0].id}) }}',
 			)
 		})
 	</script>
@@ -49,7 +49,7 @@
 				{# @pebvariable name="controlLink" type="net.amunak.models.ShockiesControlLink" #}
 				{% for controlLink in client.controlLinks %}
 					<tr>
-						<td><code>{{ controlLink.id }}</code></td>
+						<td><code>{{ absoluteUri(route("control.ws", {"linkId": controlLink.id})) }}</code></td>
 						<td>{{ controlLink.expiresAt }}</td>
 						<td>{{ controlLink.configuration.features }}</td>
 						<td>{{ controlLink.configuration.shockIntensity }}</td>

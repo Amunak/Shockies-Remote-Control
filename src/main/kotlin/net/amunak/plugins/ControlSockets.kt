@@ -3,16 +3,15 @@ package net.amunak.plugins
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import net.amunak.eventBus.DeviceMessageEventBus
-import net.amunak.models.*
+import net.amunak.models.ShockiesControlLink
+import net.amunak.models.ShockiesControlLinkId
+import net.amunak.models.WebsocketLogMessage
 import net.amunak.models.WebsocketLogMessage.WebsocketMessageDirection
 import net.amunak.repository.ShockiesClientRepository
 import net.amunak.repository.ShockiesControlLinkRepository
-import java.time.Duration
 
 fun Application.configureControlSockets() {
 	routing {

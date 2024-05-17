@@ -1,6 +1,5 @@
 package net.amunak.models
 
-import io.ktor.server.application.*
 import java.security.SecureRandom
 
 final data class ShockiesControlLinkId(val value: String) : Comparable<ShockiesControlLinkId> {
@@ -10,7 +9,7 @@ final data class ShockiesControlLinkId(val value: String) : Comparable<ShockiesC
 			val stringBuilder = StringBuilder()
 			val chars: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
-			for (i in 0..64) {
+			for (i in 0..16) {
 				stringBuilder.append(chars[secureRandom.nextInt(chars.size)])
 			}
 

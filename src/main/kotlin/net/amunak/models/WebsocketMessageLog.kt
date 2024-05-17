@@ -1,6 +1,5 @@
 package net.amunak.models
 
-import kotlinx.coroutines.runBlocking
 import net.amunak.models.WebsocketLogMessage.WebsocketMessageDirection
 
 const val maxMessages: Int = 1000;

@@ -10,8 +10,8 @@ export default class Control {
 		this.websocketUrl = websocketUrl
 		this.connect()
 
-		bindForm.querySelectorAll('button#shock').forEach((button) => button.addEventListener('mousedown', this.trigger.bind(this, "S", this.bindForm.querySelector('input#shockIntensity').value)))
-		bindForm.querySelectorAll('button#vibrate').forEach((button) => button.addEventListener('mousedown', this.trigger.bind(this, "V", this.bindForm.querySelector('input#vibrateIntensity').value)))
+		bindForm.querySelectorAll('button#shock').forEach((button) => button.addEventListener('mousedown', this.trigger.bind(this, "S", this.bindForm.querySelector('input#shockIntensity'))))
+		bindForm.querySelectorAll('button#vibrate').forEach((button) => button.addEventListener('mousedown', this.trigger.bind(this, "V", this.bindForm.querySelector('input#vibrateIntensity'))))
 		bindForm.querySelectorAll('button#beep').forEach((button) => button.addEventListener('mousedown', this.trigger.bind(this, "B")))
 		bindForm.querySelectorAll('button#light').forEach((button) => button.addEventListener('mousedown', this.trigger.bind(this, "L")))
 		bindForm.querySelectorAll('button#stop').forEach((button) => button.addEventListener('mousedown', this.trigger.bind(this, "X")))
@@ -19,7 +19,11 @@ export default class Control {
 		bindForm.querySelectorAll('button').forEach((button) => button.addEventListener('mouseup', this.trigger.bind(this, "R")))
 	}
 
-	trigger(action, argument) {
+	/**
+	 * @param {string} action
+	 * @param {?HTMLInputElement} valueElement
+	 */
+	trigger(action, valueElement) {
 		const args = []
 		args.push(action)
 
@@ -28,8 +32,8 @@ export default class Control {
 			args.push('0')
 		}
 
-		if (typeof argument === 'string' && argument.length > 0) {
-			args.push(argument)
+		if (typeof valueElement === 'object' && valueElement !== null) {
+			args.push(valueElement.value)
 		}
 
 		let accessKey = this.bindForm.querySelector('input#accessKey').value

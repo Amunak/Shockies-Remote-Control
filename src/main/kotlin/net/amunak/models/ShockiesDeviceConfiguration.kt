@@ -1,7 +1,5 @@
 package net.amunak.models
 
-import java.util.BitSet
-
 data class ShockiesDeviceConfiguration(
 	val features: ShockiesDeviceFeatures = ShockiesDeviceFeatures(),
 	val shockIntensity: Int = 100,

@@ -6,10 +6,11 @@ import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.ratelimit.*
+import io.ktor.server.request.*
 import io.ktor.server.websocket.*
 import net.amunak.plugins.configureControlSockets
-import net.amunak.plugins.configureRouting
 import net.amunak.plugins.configureDeviceSockets
+import net.amunak.plugins.configureRouting
 import net.amunak.plugins.configureTemplating
 import net.amunak.repository.Properties
 import java.time.Duration
@@ -24,6 +25,24 @@ fun main() {
 
 	embeddedServer(CIO, port = 8080, host = "0.0.0.0", module = Application::module, watchPaths = listOf("classes", "resources"))
 		.start(wait = true)
+}
+
+private var baseUri: String = "/"
+public val Application.baseUri: String
+	get() = net.amunak.baseUri
+
+fun ApplicationRequest.updateBaseUri() {
+	if (net.amunak.baseUri != "/") {
+		return
+	}
+
+	net.amunak.baseUri = local.run {
+		if ((serverPort == 80 && scheme == "http") || (serverPort == 443 && scheme == "https")) {
+			"${scheme}://${serverHost}/"
+		} else {
+			"${scheme}://${serverHost}:${serverPort}/"
+		}
+	}
 }
 
 fun Application.module() {
